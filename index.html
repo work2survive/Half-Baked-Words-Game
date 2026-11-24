@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Half Baked Words 🍪 The Daily Word & Nibble Game</title>
+  <meta name="description" content="Half Baked Words: A daily cookie-baking word game where every valid word forces you to bite, nibble, or reshape your cookie letters!">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Crumb Particle Physics Canvas Overlay -->
+  <canvas id="crumb-canvas"></canvas>
+
+  <div id="app-container">
+    <!-- Top Header -->
+    <header class="game-header">
+      <div class="logo-area">
+        <div class="logo-cookie-icon">🍪</div>
+        <div class="logo-text">
+          <h1>Half Baked Words</h1>
+          <span id="mode-badge" class="game-badge">Daily Bake</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-mode-toggle" class="icon-btn" title="Toggle Daily / Free Bake">🎲</button>
+        <button id="btn-sound" class="icon-btn" title="Toggle Sound">🔊</button>
+        <button id="btn-rules" class="icon-btn" title="How to Play & Nibble Guide">❓</button>
+      </div>
+    </header>
+
+    <!-- Stats Ribbon -->
+    <section class="stats-ribbon">
+      <div class="stat-item">
+        <span class="stat-label">Score</span>
+        <span id="stat-score" class="stat-value">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Baked</span>
+        <button id="btn-words-list" class="words-pill-btn" title="View Baked Words">
+          <span id="stat-words">0</span> <span>words 📜</span>
+        </button>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Cookies</span>
+        <span id="stat-cookies-left" class="stat-value">16</span>
+      </div>
+    </section>
+
+    <!-- Status / Action Banner -->
+    <div id="status-banner" class="status-banner">
+      Drag or tap cookie letters to bake a word!
+    </div>
+
+    <!-- Word Assembly Plate (Cooling Rack) -->
+    <section class="word-rack-section">
+      <div class="rack-title-row">
+        <span class="rack-title">Baking Plate</span>
+        <span id="rack-hint" class="word-validation-hint"></span>
+      </div>
+
+      <div id="word-plate-slots" class="word-plate-slots">
+        <div class="empty-plate-text">Drag or tap cookies here to compose word</div>
+      </div>
+
+      <div class="rack-actions-row">
+        <button id="btn-clear-rack" class="action-btn btn-secondary" title="Clear Plate">
+          <span>✕ Clear</span>
+        </button>
+        <button id="btn-send-word" class="action-btn btn-send hidden" title="Send Word">
+          <span>Bake Word ✓</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Baking Tray (Parchment Sheet) -->
+    <main class="tray-wrapper">
+      <div class="tray-parchment">
+        <div class="tray-header-sub">
+          <span id="tray-count-label" class="tray-count-label">Tray Cookies</span>
+          <div class="tray-quick-tools">
+            <button id="btn-shuffle-tray" class="tray-tool-btn" title="Shuffle Tray Cookies">
+              <span>🔀 Shuffle</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="cookie-grid" class="cookie-grid">
+          <!-- Dynamically populated cookie items -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Nibble / Bite Choice Modal -->
+  <div id="bite-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>🍪</span> Take a Bite!</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="bite-modal-preview">
+        <div id="bite-cookie-preview" class="bite-preview-cookie"></div>
+      </div>
+      <p style="font-size:13px; color:#d6bfad; margin-bottom:12px; text-align:center;">
+        Choose how you want to bite or nibble this cookie letter:
+      </p>
+      <div id="bite-options-container" class="bite-options-list">
+        <!-- Dynamically injected bite options -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Words List Modal -->
+  <div id="words-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>📜</span> Freshly Baked Words</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="words-table-wrapper">
+        <table class="words-table">
+          <thead>
+            <tr>
+              <th>Word</th>
+              <th style="text-align:right;">Points</th>
+            </tr>
+          </thead>
+          <tbody id="words-list-tbody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      <button class="action-btn btn-secondary modal-close-btn" style="width:100%; justify-content:center;">Close</button>
+    </div>
+  </div>
+
+  <!-- Rules & Nibble Guide Modal -->
+  <div id="rules-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>📖</span> How to Play</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div style="font-size: 13px; line-height: 1.5; color: #eed4be; margin-bottom: 14px;">
+        <p style="margin-bottom: 8px;"><strong>1. Daily Tray:</strong> Every day, all players get the exact same 16 fresh cookie letters!</p>
+        <p style="margin-bottom: 8px;"><strong>2. Bake Words:</strong> Drag or tap cookies to form valid English words (3+ letters). Click <strong>Bake Word ✓</strong> to score points!</p>
+        <p style="margin-bottom: 8px;"><strong>3. The Twist — Bite 3 Cookies:</strong> Each time you bake a word, you must take <strong>3 bites</strong> from your tray!</p>
+        <p style="margin-bottom: 8px;"><strong>4. Nibble & Reshape:</strong> Some letters disappear when bitten. But others can be <em>nibbled</em> into new letters or split in half!</p>
+        <p style="margin-bottom: 8px;"><strong>5. Free Rotations:</strong> Letters like <strong>M ↔ W</strong> and <strong>N ↔ Z</strong> can be rotated anytime for free!</p>
+        <p><strong>6. Game Over:</strong> When no more valid words can be made from your remaining cookies, the oven cools and final score is tallied!</p>
+      </div>
+
+      <h4 style="font-size: 14px; color: #ffdeaa; margin-bottom: 8px;">Cookie Nibble Recipe Guide:</h4>
+      <div class="rules-grid">
+        <div class="rule-card">
+          <span class="rule-from">A</span> <span class="rule-arrow">➔</span> <span class="rule-to">V</span>
+          <span class="rule-info">Nibble & Rotate</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">B</span> <span class="rule-arrow">➔</span> <span class="rule-to">P, R, E, F, I</span>
+          <span class="rule-info">Selective Nibbles</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">E</span> <span class="rule-arrow">➔</span> <span class="rule-to">F, L, I</span>
+          <span class="rule-info">Bite off arms</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">H</span> <span class="rule-arrow">➔</span> <span class="rule-to">I + I</span>
+          <span class="rule-info">Splits into TWO!</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">O, D, G</span> <span class="rule-arrow">➔</span> <span class="rule-to">C</span>
+          <span class="rule-info">Chomp a chunk</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">W</span> <span class="rule-arrow">➔</span> <span class="rule-to">V + V</span>
+          <span class="rule-info">Splits into TWO!</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">M, N</span> <span class="rule-arrow">➔</span> <span class="rule-to">V</span>
+          <span class="rule-info">Nibble stems</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">M ↔ W</span> <span class="rule-arrow">🔄</span> <span class="rule-to">N ↔ Z</span>
+          <span class="rule-info">Free rotation!</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">P, R</span> <span class="rule-arrow">➔</span> <span class="rule-to">F, I</span>
+          <span class="rule-info">Bite leg/loop</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">Q</span> <span class="rule-arrow">➔</span> <span class="rule-to">O, C</span>
+          <span class="rule-info">Bite off tail</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">T</span> <span class="rule-arrow">➔</span> <span class="rule-to">L, I</span>
+          <span class="rule-info">Nibble & Rotate</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">U</span> <span class="rule-arrow">➔</span> <span class="rule-to">J</span>
+          <span class="rule-info">Bite left arm</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">X</span> <span class="rule-arrow">➔</span> <span class="rule-to">Y</span>
+          <span class="rule-info">Bite lower leg</span>
+        </div>
+        <div class="rule-card">
+          <span class="rule-from">K, L, V</span> <span class="rule-arrow">➔</span> <span class="rule-to">I</span>
+          <span class="rule-info">Nibbles down to I</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Over / Baker Summary Modal -->
+  <div id="gameover-modal" class="modal-overlay">
+    <div class="modal-card" style="text-align: center;">
+      <div style="font-size: 42px; margin-bottom: 6px;">🧑‍🍳✨</div>
+      <h3 style="font-size: 24px; color: #ffdeaa; font-weight: 900; margin-bottom: 4px;">Oven's Cooled Down!</h3>
+      <p style="font-size: 13px; color: #cfb39b; margin-bottom: 14px;">No more words can be baked with your remaining cookies.</p>
+      
+      <div class="gameover-score-box">
+        <div style="font-size: 11px; text-transform: uppercase; color: #e6a760; font-weight: 700; letter-spacing: 1px;">Final Score</div>
+        <div id="final-score-val" class="gameover-score-number">0</div>
+        <div id="final-baker-rank" class="gameover-rank">Apprentice Baker</div>
+      </div>
+
+      <div style="display: flex; justify-content: space-around; margin-bottom: 16px; font-size: 13px; color: #eed4be;">
+        <div><strong>Words:</strong> <span id="final-words-count">0</span></div>
+        <div><strong>Best Word:</strong> <span id="final-best-word">None</span></div>
+      </div>
+
+      <button id="btn-share-result" class="share-btn" style="width: 100%;">
+        <span>📋 Share Baker Score</span>
+      </button>
+
+      <button id="btn-play-again" class="action-btn btn-secondary" style="width: 100%; justify-content: center; margin-top: 10px;">
+        <span>🎲 Play Free Bake</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="dictionary.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
