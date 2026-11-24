@@ -356,14 +356,21 @@ function getDateSeed(date = new Date()) {
 
 // Cookie SVG letter renderer
 function renderCookieSvg(letter, isNibbled = false, rotationDeg = 0) {
-  // Deterministic seed for chocolate chip positions per letter
+  // Deterministic positions strictly in the outer corners/edges, far from the central letter
   const code = letter.charCodeAt(0);
-  const chip1X = 24 + ((code * 7) % 20);
-  const chip1Y = 22 + ((code * 11) % 18);
-  const chip2X = 36 + ((code * 13) % 16);
-  const chip2Y = 40 + ((code * 5) % 18);
-  const chip3X = 20 + ((code * 17) % 18);
-  const chip3Y = 42 + ((code * 3) % 16);
+  
+  // Outer corner positions (far from center letter which is centered at 35,35)
+  const chipTL_X = 14 + ((code * 5) % 6);
+  const chipTL_Y = 14 + ((code * 7) % 6);
+
+  const chipTR_X = 50 + ((code * 11) % 6);
+  const chipTR_Y = 14 + ((code * 3) % 6);
+
+  const chipBL_X = 14 + ((code * 13) % 6);
+  const chipBL_Y = 50 + ((code * 5) % 6);
+
+  const chipBR_X = 50 + ((code * 7) % 6);
+  const chipBR_Y = 50 + ((code * 11) % 6);
 
   const biteMarkup = isNibbled ? `
     <g class="cookie-bite-mark">
@@ -400,21 +407,28 @@ function renderCookieSvg(letter, isNibbled = false, rotationDeg = 0) {
       <rect x="6" y="6" width="58" height="58" rx="18" fill="url(#doughGrad-${letter})" filter="url(#shadow3d)" stroke="#925723" stroke-width="2.5" />
       
       <!-- Biscuit Edge Texture / Crust speckles -->
-      <circle cx="14" cy="14" r="1.5" fill="#a46933" opacity="0.6"/>
-      <circle cx="56" cy="14" r="1.2" fill="#a46933" opacity="0.6"/>
-      <circle cx="14" cy="56" r="1.2" fill="#a46933" opacity="0.6"/>
-      <circle cx="56" cy="56" r="1.5" fill="#a46933" opacity="0.6"/>
+      <circle cx="12" cy="35" r="1.2" fill="#a46933" opacity="0.6"/>
+      <circle cx="58" cy="35" r="1.2" fill="#a46933" opacity="0.6"/>
+      <circle cx="35" cy="12" r="1.2" fill="#a46933" opacity="0.6"/>
+      <circle cx="35" cy="58" r="1.2" fill="#a46933" opacity="0.6"/>
 
-      <!-- Chocolate Chips -->
-      <ellipse cx="${chip1X}" cy="${chip1Y}" rx="3.5" ry="3.2" fill="url(#chipGrad)" />
-      <ellipse cx="${chip2X}" cy="${chip2Y}" rx="4" ry="3.5" fill="url(#chipGrad)" />
-      <ellipse cx="${chip3X}" cy="${chip3Y}" rx="3.2" ry="3.8" fill="url(#chipGrad)" />
-      <!-- Chip highlights -->
-      <circle cx="${chip1X - 1}" cy="${chip1Y - 1}" r="1" fill="#7d4422" opacity="0.8" />
-      <circle cx="${chip2X - 1.2}" cy="${chip2Y - 1}" r="1.2" fill="#7d4422" opacity="0.8" />
+      <!-- Chocolate Chips strictly at outer corners, away from letter -->
+      <ellipse cx="${chipTL_X}" cy="${chipTL_Y}" rx="3.2" ry="2.8" fill="url(#chipGrad)" />
+      <circle cx="${chipTL_X - 0.8}" cy="${chipTL_Y - 0.8}" r="0.8" fill="#7d4422" opacity="0.8" />
 
-      <!-- Cookie Cutout / Embossed Letter -->
-      <text x="35" y="47" text-anchor="middle" font-family="'Fredoka', Arial Black, sans-serif" font-size="34" font-weight="900" fill="#44210c" stroke="#2a1205" stroke-width="1.2" opacity="0.95" style="letter-spacing: -1px;">${letter}</text>
+      ${!isNibbled ? `
+      <ellipse cx="${chipTR_X}" cy="${chipTR_Y}" rx="3.4" ry="3.0" fill="url(#chipGrad)" />
+      <circle cx="${chipTR_X - 0.8}" cy="${chipTR_Y - 0.8}" r="0.9" fill="#7d4422" opacity="0.8" />
+      ` : ''}
+
+      <ellipse cx="${chipBL_X}" cy="${chipBL_Y}" rx="3.3" ry="3.1" fill="url(#chipGrad)" />
+      <circle cx="${chipBL_X - 0.8}" cy="${chipBL_Y - 0.8}" r="0.8" fill="#7d4422" opacity="0.8" />
+
+      <ellipse cx="${chipBR_X}" cy="${chipBR_Y}" rx="3.5" ry="3.0" fill="url(#chipGrad)" />
+      <circle cx="${chipBR_X - 0.8}" cy="${chipBR_Y - 0.8}" r="0.9" fill="#7d4422" opacity="0.8" />
+
+      <!-- High-legibility Embossed Cookie Letter with crisp dough contour stroke -->
+      <text x="35" y="47" text-anchor="middle" font-family="'Fredoka', Arial Black, sans-serif" font-size="34" font-weight="900" fill="#351a08" stroke="#fdf4e4" stroke-width="2.5" paint-order="stroke fill" filter="url(#shadow3d)" style="letter-spacing: -1px;">${letter}</text>
 
       <!-- Nibbled bite mark (if transformed) -->
       ${biteMarkup}
