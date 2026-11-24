@@ -33,7 +33,7 @@ After each valid word you bake, the twist takes effect: **You must take 3 bites 
 - **Cookie Splitting**: Bite the crossbar of an **H**, and it snaps in two to give you **two I cookies**! Snap a **W** and you get **two V cookies**!
 - **Free Rotations**: Letters like **M ↔ W** and **N ↔ Z** can be turned upside down anytime for free without using up any of your bites.
 
-When no more valid English words of 3+ letters can be formed with your remaining cookies, the oven cools down and your game concludes automatically.
+When no more valid English words of 4+ letters can be formed with your remaining cookies, the oven cools down and your game concludes automatically. You can also press **🏳️ Give Up** at any time to finalize your bake.
 
 ---
 
@@ -41,7 +41,7 @@ When no more valid English words of 3+ letters can be formed with your remaining
 
 ### 1. Build a Word
 - **Tap or Drag**: Tap any cookie on the baking tray to send it to the **Baking Plate**, or drag and drop to reorder letters.
-- **Validation**: When the letters form a valid English word (minimum 3 letters), the cookies bounce with a golden glow and the **Bake Word ✓** button appears.
+- **Validation**: When the letters form a valid English word (**minimum 4 letters long**), the cookies bounce with a golden glow and the **Bake Word ✓** button appears.
 - **Recipe Book**: Over 83,000 words verified instantly against the official Scrabble ENABLE1 word list.
 
 ### 2. Take Your 3 Bites
@@ -51,9 +51,10 @@ When no more valid English words of 3+ letters can be formed with your remaining
   - If it has no transformations, crunch it into crumbs!
 - Each bite triggers realistic crumb animations and crunch sounds.
 
-### 3. Automatic Endgame
-- A high-speed Trie algorithm continuously verifies whether any 3+ letter words can still be formed with the remaining letters (and any free rotations).
-- As soon as no combinations remain, the game automatically finishes, displaying your final score, words baked list, and a shareable Wordle-style summary!
+### 3. Endgame & Give Up
+- A high-speed Trie algorithm continuously verifies whether any 4+ letter words can still be formed with the remaining letters (and any free rotations).
+- As soon as no combinations remain, the game automatically finishes, displaying your final score, words baked list, and a shareable scorecard!
+- **Give Up Button**: Want to call it a day? Click **🏳️ Give Up** to cool down the oven anytime with a safety confirmation prompt.
 
 ---
 
@@ -91,7 +92,6 @@ Points are awarded based on word length and letter rarity:
 
 | Word Length | Base Points |
 |:---:|:---:|
-| **3 letters** | 20 pts + letter points |
 | **4 letters** | 40 pts + letter points |
 | **5 letters** | 75 pts + letter points |
 | **6 letters** | 120 pts + letter points |

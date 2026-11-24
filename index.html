@@ -62,12 +62,15 @@
       </div>
 
       <div id="word-plate-slots" class="word-plate-slots">
-        <div class="empty-plate-text">Drag or tap cookies here to compose word</div>
+        <div class="empty-plate-text">Drag or tap cookies here to compose word (4+ letters)</div>
       </div>
 
       <div class="rack-actions-row">
         <button id="btn-clear-rack" class="action-btn btn-secondary" title="Clear Plate">
           <span>✕ Clear</span>
+        </button>
+        <button id="btn-give-up" class="action-btn btn-give-up" title="Give Up / End Game">
+          <span>🏳️ Give Up</span>
         </button>
         <button id="btn-send-word" class="action-btn btn-send hidden" title="Send Word">
           <span>Bake Word ✓</span>
@@ -146,7 +149,7 @@
       </div>
       <div style="font-size: 13px; line-height: 1.5; color: #eed4be; margin-bottom: 14px;">
         <p style="margin-bottom: 8px;"><strong>1. Daily Tray:</strong> Every day, all players get the exact same 16 fresh cookie letters!</p>
-        <p style="margin-bottom: 8px;"><strong>2. Bake Words:</strong> Drag or tap cookies to form valid English words (3+ letters). Click <strong>Bake Word ✓</strong> to score points!</p>
+        <p style="margin-bottom: 8px;"><strong>2. Bake Words:</strong> Drag or tap cookies to form valid English words (4+ letters). Click <strong>Bake Word ✓</strong> to score points!</p>
         <p style="margin-bottom: 8px;"><strong>3. The Twist — Bite 3 Cookies:</strong> Each time you bake a word, you must take <strong>3 bites</strong> from your tray!</p>
         <p style="margin-bottom: 8px;"><strong>4. Nibble & Reshape:</strong> Some letters disappear when bitten. But others can be <em>nibbled</em> into new letters or split in half!</p>
         <p style="margin-bottom: 8px;"><strong>5. Free Rotations:</strong> Letters like <strong>M ↔ W</strong> and <strong>N ↔ Z</strong> can be rotated anytime for free!</p>
@@ -240,6 +243,25 @@
       <button id="btn-play-again" class="action-btn btn-secondary" style="width: 100%; justify-content: center; margin-top: 10px;">
         <span>🎲 Play Free Bake</span>
       </button>
+    </div>
+  </div>
+
+  <!-- Give Up Confirmation Modal -->
+  <div id="giveup-modal" class="modal-overlay">
+    <div class="modal-card" style="text-align: center; max-width: 380px;">
+      <div style="font-size: 38px; margin-bottom: 6px;">🧊🧑‍🍳</div>
+      <h3 style="font-size: 20px; color: #ffdeaa; font-weight: 800; margin-bottom: 8px;">Cool Down Oven?</h3>
+      <p style="font-size: 13px; color: #cfb39b; margin-bottom: 18px; line-height: 1.4;">
+        Are you sure you want to give up and end this game? Your score and baked words will be finalized on your Baker Report.
+      </p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button id="btn-cancel-giveup" class="action-btn btn-secondary" style="flex: 1; justify-content: center;">
+          <span>Keep Baking</span>
+        </button>
+        <button id="btn-confirm-giveup" class="action-btn btn-danger" style="flex: 1; justify-content: center;">
+          <span>End Game</span>
+        </button>
+      </div>
     </div>
   </div>
 

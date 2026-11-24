@@ -326,6 +326,28 @@ html, body {
   background: rgba(110, 85, 80, 0.9);
 }
 
+.btn-give-up {
+  background: rgba(140, 45, 40, 0.45);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.btn-give-up:hover {
+  background: rgba(185, 28, 28, 0.75);
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: #fff;
+  border: none;
+}
+
+.btn-danger:hover {
+  filter: brightness(1.1);
+}
+
 .btn-send {
   background: linear-gradient(135deg, #27ae60, #2ecc71);
   color: #ffffff;

@@ -480,9 +480,9 @@ class HalfBakedWordsGame {
     }
   }
 
-  // Check if any valid word of length >= 3 can be made with current cookies
+  // Check if any valid word of length >= 4 can be made with current cookies
   canFormAnyWord(cookies) {
-    if (!this.trie || cookies.length < 3) return false;
+    if (!this.trie || cookies.length < 4) return false;
 
     // Build letter frequency map, taking into account rotatable options
     // M can be W, W can be M, N can be Z, Z can be N
@@ -502,7 +502,7 @@ class HalfBakedWordsGame {
     }
 
     function dfs(node, depth, currentCounts) {
-      if (node.$ && depth >= 3) return true;
+      if (node.$ && depth >= 4) return true;
       for (const ch in currentCounts) {
         if (currentCounts[ch] > 0 && node[ch]) {
           currentCounts[ch]--;
@@ -599,7 +599,7 @@ class HalfBakedWordsGame {
     this.trayCookies = this.generateCookies(seedInt);
     this.updateStats();
     this.render();
-    this.showStatus('Drag or tap cookie letters to bake a word!');
+    this.showStatus('Drag or tap cookie letters to bake a word (4+ letters)!');
   }
 
   setupUI() {
@@ -615,6 +615,9 @@ class HalfBakedWordsGame {
     document.getElementById('btn-rules').addEventListener('click', () => this.openModal('rules-modal'));
     document.getElementById('btn-words-list').addEventListener('click', () => this.openWordsModal());
     document.getElementById('btn-clear-rack').addEventListener('click', () => this.clearRack());
+    document.getElementById('btn-give-up').addEventListener('click', () => this.openModal('giveup-modal'));
+    document.getElementById('btn-cancel-giveup').addEventListener('click', () => this.closeModal('giveup-modal'));
+    document.getElementById('btn-confirm-giveup').addEventListener('click', () => this.giveUp());
     document.getElementById('btn-shuffle-tray').addEventListener('click', () => this.shuffleTray());
     document.getElementById('btn-send-word').addEventListener('click', () => this.sendCurrentWord());
     document.getElementById('btn-play-again').addEventListener('click', () => {
@@ -843,10 +846,10 @@ class HalfBakedWordsGame {
     const sendBtn = document.getElementById('btn-send-word');
     const hintEl = document.getElementById('rack-hint');
 
-    if (word.length < 3) {
+    if (word.length < 4) {
       sendBtn.classList.add('hidden');
       hintEl.className = 'word-validation-hint';
-      hintEl.textContent = word.length > 0 ? `${word.length}/3 letters needed` : '';
+      hintEl.textContent = word.length > 0 ? `${word.length}/4 letters needed` : '';
       return false;
     }
 
@@ -1057,6 +1060,13 @@ class HalfBakedWordsGame {
     }
   }
 
+  giveUp() {
+    this.closeModal('giveup-modal');
+    this.state = 'GAME_OVER';
+    this.audio.playFanfare();
+    this.openGameOverModal();
+  }
+
   openGameOverModal() {
     const modal = document.getElementById('gameover-modal');
     document.getElementById('final-score-val').textContent = this.score;
@@ -1152,7 +1162,7 @@ class HalfBakedWordsGame {
     if (this.rackCookies.length === 0) {
       const placeholder = document.createElement('div');
       placeholder.className = 'empty-plate-text';
-      placeholder.textContent = this.state === 'BITE_PHASE' ? 'Finish bites below' : 'Drag or tap cookies here to compose word';
+      placeholder.textContent = this.state === 'BITE_PHASE' ? 'Finish bites below' : 'Drag or tap cookies here to compose word (4+ letters)';
       rackContainer.appendChild(placeholder);
     } else {
       this.rackCookies.forEach(id => {
