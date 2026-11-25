@@ -354,84 +354,134 @@ function getDateSeed(date = new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-// Cookie SVG letter renderer
-function renderCookieSvg(letter, isNibbled = false, rotationDeg = 0) {
-  // Deterministic positions strictly in the outer corners/edges, far from the central letter
-  const code = letter.charCodeAt(0);
-  
-  // Outer corner positions (far from center letter which is centered at 35,35)
-  const chipTL_X = 14 + ((code * 5) % 6);
-  const chipTL_Y = 14 + ((code * 7) % 6);
+// Cookie SVG letter renderer - Character-shaped dough cookie matching reference
+function renderCookieSvg(letter, isNibbled = false, rotationDeg = 0, cookieId = null) {
+  const uid = (cookieId || 'ck_' + letter) + '_' + Math.random().toString(36).substring(2, 7);
 
-  const chipTR_X = 50 + ((code * 11) % 6);
-  const chipTR_Y = 14 + ((code * 3) % 6);
+  // 9 candidate chips spread across the letter anatomy
+  const chipCandidates = [
+    { x: 35, y: 16, rot: 15, w: 7, h: 7 }, // top center
+    { x: 22, y: 24, rot: -20, w: 7.5, h: 6.5 }, // top left
+    { x: 48, y: 24, rot: 25, w: 7, h: 7 }, // top right
+    { x: 35, y: 35, rot: -10, w: 7.5, h: 7 }, // center
+    { x: 20, y: 38, rot: 20, w: 8, h: 7 }, // mid left
+    { x: 50, y: 38, rot: -25, w: 7.5, h: 7.5 }, // mid right
+    { x: 22, y: 53, rot: 10, w: 7.5, h: 6.5 }, // bottom left
+    { x: 48, y: 53, rot: -15, w: 7, h: 7 }, // bottom right
+    { x: 35, y: 55, rot: 15, w: 8, h: 6.5 }  // bottom center
+  ];
 
-  const chipBL_X = 14 + ((code * 13) % 6);
-  const chipBL_Y = 50 + ((code * 5) % 6);
+  const chipsMarkup = chipCandidates.map(c => `
+    <g transform="translate(${c.x}, ${c.y}) rotate(${c.rot})">
+      <rect x="${-c.w/2}" y="${-c.h/2}" width="${c.w}" height="${c.h}" rx="2" fill="url(#chipGrad-${uid})" />
+      <path d="M ${-c.w/2 + 0.8} ${-c.h/2 + 0.8} L ${c.w/2 - 1.2} ${-c.h/2 + 0.8}" stroke="#8a4b27" stroke-width="1.1" stroke-linecap="round" />
+    </g>
+  `).join('');
 
-  const chipBR_X = 50 + ((code * 7) % 6);
-  const chipBR_Y = 50 + ((code * 11) % 6);
+  const biteMaskDef = isNibbled ? `
+    <mask id="biteMask-${uid}">
+      <rect x="-30" y="-30" width="130" height="130" fill="white" />
+      <circle cx="54" cy="30" r="9.5" fill="black" />
+      <circle cx="58" cy="40" r="8" fill="black" />
+      <circle cx="52" cy="48" r="8.5" fill="black" />
+    </mask>
+  ` : '';
 
-  const biteMarkup = isNibbled ? `
-    <g class="cookie-bite-mark">
-      <circle cx="58" cy="18" r="9" fill="#fdf5e6" />
-      <circle cx="62" cy="28" r="7" fill="#fdf5e6" />
-      <circle cx="56" cy="34" r="8" fill="#fdf5e6" />
-      <!-- exposed crumb teeth dots -->
-      <circle cx="50" cy="20" r="1.5" fill="#8f501e" />
-      <circle cx="53" cy="28" r="1.2" fill="#542e12" />
-      <circle cx="49" cy="32" r="1.4" fill="#8f501e" />
+  const biteCrumbsMarkup = isNibbled ? `
+    <g>
+      <circle cx="45" cy="30" r="1.6" fill="#8f501e" />
+      <circle cx="49" cy="39" r="1.8" fill="#d99955" />
+      <circle cx="44" cy="47" r="1.5" fill="#6a3610" />
+      <circle cx="62" cy="32" r="1.8" fill="#d99955" />
+      <circle cx="65" cy="42" r="1.4" fill="#8f501e" />
+      <circle cx="60" cy="50" r="1.6" fill="#381b0a" />
+      <circle cx="56" cy="22" r="1.1" fill="#d99955" />
     </g>
   ` : '';
 
   return `
-    <svg class="cookie-svg" viewBox="0 0 70 70" style="transform: rotate(${rotationDeg}deg)">
+    <svg class="cookie-svg" viewBox="0 0 70 70" width="100%" height="100%" style="overflow: visible; transform: rotate(${rotationDeg}deg)">
       <defs>
-        <radialGradient id="doughGrad-${letter}" cx="35%" cy="30%" r="65%">
-          <stop offset="0%" stop-color="#f8dcaf" />
-          <stop offset="45%" stop-color="#e8ae6f" />
-          <stop offset="85%" stop-color="#cb8a46" />
-          <stop offset="100%" stop-color="#9b5f25" />
-        </radialGradient>
-        <filter id="shadow3d" x="-20%" y="-20%" width="150%" height="150%">
-          <feDropShadow dx="1" dy="3" stdDeviation="2" flood-color="rgba(40,15,5,0.45)" />
+        <!-- Warm Baked Dough Gradient -->
+        <linearGradient id="doughGrad-${uid}" x1="20%" y1="0%" x2="80%" y2="100%">
+          <stop offset="0%" stop-color="#fff2db" />
+          <stop offset="25%" stop-color="#f5d3a4" />
+          <stop offset="65%" stop-color="#e2a86a" />
+          <stop offset="100%" stop-color="#be732d" />
+        </linearGradient>
+
+        <!-- 3D Baked Bottom Crust Layer -->
+        <linearGradient id="crustGrad-${uid}" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#a6591f" />
+          <stop offset="100%" stop-color="#6e310a" />
+        </linearGradient>
+
+        <!-- Chocolate Chip Gradient -->
+        <linearGradient id="chipGrad-${uid}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#542813" />
+          <stop offset="40%" stop-color="#341609" />
+          <stop offset="100%" stop-color="#1c0a03" />
+        </linearGradient>
+
+        <!-- Drop Shadow on Tray -->
+        <filter id="cookieShadow-${uid}" x="-30%" y="-20%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="rgba(35, 15, 5, 0.5)" />
         </filter>
-        <radialGradient id="chipGrad" cx="30%" cy="30%" r="70%">
-          <stop offset="0%" stop-color="#5a2e16" />
-          <stop offset="60%" stop-color="#341808" />
-          <stop offset="100%" stop-color="#180b03" />
-        </radialGradient>
+
+        <!-- Letter Clip Path to constrain chips and cracks strictly inside dough -->
+        <clipPath id="clip-${uid}">
+          <text x="35" y="55" text-anchor="middle"
+            font-family="'Fredoka', 'Arial Rounded MT Bold', sans-serif"
+            font-size="62" font-weight="900"
+            stroke="#000" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"
+            style="letter-spacing:-1px;">${letter}</text>
+        </clipPath>
+
+        ${biteMaskDef}
       </defs>
 
-      <!-- Main Cookie Biscuit Body -->
-      <rect x="6" y="6" width="58" height="58" rx="18" fill="url(#doughGrad-${letter})" filter="url(#shadow3d)" stroke="#925723" stroke-width="2.5" />
-      
-      <!-- Biscuit Edge Texture / Crust speckles -->
-      <circle cx="12" cy="35" r="1.2" fill="#a46933" opacity="0.6"/>
-      <circle cx="58" cy="35" r="1.2" fill="#a46933" opacity="0.6"/>
-      <circle cx="35" cy="12" r="1.2" fill="#a46933" opacity="0.6"/>
-      <circle cx="35" cy="58" r="1.2" fill="#a46933" opacity="0.6"/>
+      <g filter="url(#cookieShadow-${uid})" ${isNibbled ? `mask="url(#biteMask-${uid})"` : ''}>
+        <!-- 1. Baked 3D bottom extrusion (crust thickness) -->
+        <text x="35" y="58" text-anchor="middle"
+          font-family="'Fredoka', 'Arial Rounded MT Bold', sans-serif"
+          font-size="62" font-weight="900"
+          fill="url(#crustGrad-${uid})"
+          stroke="url(#crustGrad-${uid})" stroke-width="12"
+          stroke-linejoin="round" stroke-linecap="round"
+          style="letter-spacing:-1px;">${letter}</text>
 
-      <!-- Chocolate Chips strictly at outer corners, away from letter -->
-      <ellipse cx="${chipTL_X}" cy="${chipTL_Y}" rx="3.2" ry="2.8" fill="url(#chipGrad)" />
-      <circle cx="${chipTL_X - 0.8}" cy="${chipTL_Y - 0.8}" r="0.8" fill="#7d4422" opacity="0.8" />
+        <!-- 2. Mid golden-brown crust edge -->
+        <text x="35" y="56" text-anchor="middle"
+          font-family="'Fredoka', 'Arial Rounded MT Bold', sans-serif"
+          font-size="62" font-weight="900"
+          fill="#c47a32"
+          stroke="#c47a32" stroke-width="8"
+          stroke-linejoin="round" stroke-linecap="round"
+          style="letter-spacing:-1px;">${letter}</text>
 
-      ${!isNibbled ? `
-      <ellipse cx="${chipTR_X}" cy="${chipTR_Y}" rx="3.4" ry="3.0" fill="url(#chipGrad)" />
-      <circle cx="${chipTR_X - 0.8}" cy="${chipTR_Y - 0.8}" r="0.9" fill="#7d4422" opacity="0.8" />
-      ` : ''}
+        <!-- 3. Main puffy cookie dough face -->
+        <text x="35" y="55" text-anchor="middle"
+          font-family="'Fredoka', 'Arial Rounded MT Bold', sans-serif"
+          font-size="62" font-weight="900"
+          fill="url(#doughGrad-${uid})"
+          stroke="url(#doughGrad-${uid})" stroke-width="4"
+          stroke-linejoin="round" stroke-linecap="round"
+          style="letter-spacing:-1px;">${letter}</text>
 
-      <ellipse cx="${chipBL_X}" cy="${chipBL_Y}" rx="3.3" ry="3.1" fill="url(#chipGrad)" />
-      <circle cx="${chipBL_X - 0.8}" cy="${chipBL_Y - 0.8}" r="0.8" fill="#7d4422" opacity="0.8" />
+        <!-- 4. Inside Dough Features (Chips & Cracks clipped inside the letter shape) -->
+        <g clip-path="url(#clip-${uid})">
+          <!-- Creamy top gloss / highlight reflection -->
+          <ellipse cx="35" cy="22" rx="25" ry="12" fill="#ffffff" opacity="0.22" />
+          <!-- Baked surface cracks -->
+          <path d="M 18 36 Q 25 38 30 35" stroke="#9e561a" stroke-width="1" fill="none" opacity="0.55" />
+          <path d="M 40 46 Q 47 44 54 48" stroke="#9e561a" stroke-width="1" fill="none" opacity="0.55" />
+          <!-- Chocolate chips on dough -->
+          ${chipsMarkup}
+        </g>
+      </g>
 
-      <ellipse cx="${chipBR_X}" cy="${chipBR_Y}" rx="3.5" ry="3.0" fill="url(#chipGrad)" />
-      <circle cx="${chipBR_X - 0.8}" cy="${chipBR_Y - 0.8}" r="0.9" fill="#7d4422" opacity="0.8" />
-
-      <!-- High-legibility Embossed Cookie Letter with crisp dough contour stroke -->
-      <text x="35" y="47" text-anchor="middle" font-family="'Fredoka', Arial Black, sans-serif" font-size="34" font-weight="900" fill="#351a08" stroke="#fdf4e4" stroke-width="2.5" paint-order="stroke fill" filter="url(#shadow3d)" style="letter-spacing: -1px;">${letter}</text>
-
-      <!-- Nibbled bite mark (if transformed) -->
-      ${biteMarkup}
+      <!-- 5. Bite Crumb Particles (if nibbled) -->
+      ${biteCrumbsMarkup}
     </svg>
   `;
 }
